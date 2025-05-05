@@ -123,6 +123,11 @@ const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'}
     .text-container {
         padding: 1rem; /* Add some padding inside text container */
     }
+
+    /* Increase font size for text-only blocks */
+    .scroll-block.only-text .text-container {
+        font-size: 1.2em; /* 20% larger font size */
+    }
   }
 
   @media (min-width: 1024px) {
