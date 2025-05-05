@@ -139,7 +139,7 @@ export function parseCanvas(canvasData) {
              if (mediaType !== 'unknown') {
                  block.media = {
                      type: mediaType,
-                     src: `/${node.file}`, // Assume files are in public/
+                     src: transformMediaPath(node.file),
                      alt: createAltText(node.file)
                  };
              }
@@ -156,7 +156,7 @@ export function parseCanvas(canvasData) {
       if (mediaType !== 'unknown') {
           block.media = {
               type: mediaType,
-              src: `/${mediaNode.file}`, // Assume files are in public/
+              src: transformMediaPath(mediaNode.file),
               alt: createAltText(mediaNode.file)
           };
       }
@@ -172,7 +172,7 @@ export function parseCanvas(canvasData) {
         if (mediaType !== 'unknown') {
             block.media = {
                 type: mediaType,
-                src: `/${node.file}`, // Assume files are in public/
+                src: transformMediaPath(node.file),
                 alt: createAltText(node.file)
             };
         } else {
