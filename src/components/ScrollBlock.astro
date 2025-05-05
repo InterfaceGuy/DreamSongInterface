@@ -1,0 +1,135 @@
+---
+// Define more flexible types for potentially missing media/text
+interface MediaData {
+  type: 'image' | 'video';
+  src: string;
+  alt: string;
+}
+
+interface BlockData {
+  type: string; // e.g., 'block'
+  media?: MediaData;
+  text?: string; // HTML string
+}
+
+interface Props {
+  block: BlockData;
+  index: number; // To determine alternating layout
+}
+
+const { block, index } = Astro.props;
+
+// Determine layout order: media-left/text-right for even index, text-left/media-right for odd index
+const isMediaLeft = index % 2 === 0;
+
+// Determine if the block has both media and text, or just one
+const hasBoth = block.media && block.text;
+const hasOnlyMedia = block.media && !block.text;
+const hasOnlyText = !block.media && block.text;
+
+// Define CSS classes based on content and layout using template literals
+const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'} ${hasOnlyMedia ? 'only-media' : ''} ${hasOnlyText ? 'only-text' : ''}`;
+
+---
+
+<section class={blockClasses}>
+  {block.media && (
+    <div class="media-container">
+      {block.media.type === 'image' ? (
+        <img src={block.media.src} alt={block.media.alt} loading="lazy" />
+      ) : (
+        <video src={block.media.src} controls loading="lazy" muted autoplay loop playsinline></video>
+      )}
+    </div>
+  )}
+  {block.text && (
+    <div class="text-container">
+      <Fragment set:html={block.text} />
+    </div>
+  )}
+</section>
+
+<style>
+  .scroll-block {
+    display: flex;
+    flex-direction: column; /* Default stacked layout for small screens */
+    gap: 2rem;
+    margin-bottom: 4rem;
+    padding: 2rem 0;
+    align-items: center; /* Center items when stacked */
+    min-height: 30vh; /* Ensure blocks have some minimum height */
+  }
+
+  .media-container,
+  .text-container {
+    flex: 1; /* Allow containers to grow */
+    width: 100%; /* Full width on small screens */
+    max-width: 600px; /* Limit width of individual elements */
+  }
+
+  /* Ensure text container has reasonable width even when alone */
+  .text-container {
+     max-width: 600px; /* Consistent max-width */
+  }
+
+
+  .media-container img,
+  .media-container video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background-color: #111; /* Dark background for media loading */
+  }
+
+  /* Responsive layout for larger screens */
+  @media (min-width: 768px) {
+    .scroll-block {
+      flex-direction: row;
+      align-items: center; /* Vertically center content */
+      justify-content: center; /* Center block content horizontally */
+      gap: 4rem; /* Increase gap on larger screens */
+    }
+
+    /* Default order (media left) */
+    .media-left .media-container { order: 1; }
+    .media-left .text-container { order: 2; }
+
+    /* Reversed order (media right) */
+    .media-right .media-container { order: 2; }
+    .media-right .text-container { order: 1; }
+
+    /* Adjust width for side-by-side layout */
+    .media-container,
+    .text-container {
+       /* Use flex-basis for better control */
+       flex-basis: calc(50% - 2rem); /* 50% minus half the gap */
+       width: auto; /* Override width: 100% */
+       max-width: 550px; /* Slightly smaller max-width when side-by-side */
+    }
+
+     /* Styles for blocks with only one element on large screens */
+    .scroll-block.only-media .media-container,
+    .scroll-block.only-text .text-container {
+        flex-basis: 100%; /* Take full width */
+        max-width: 700px; /* Allow slightly wider content when alone */
+        margin: 0 auto; /* Center the single element */
+    }
+
+     /* Ensure text is readable */
+    .text-container {
+        padding: 1rem; /* Add some padding inside text container */
+    }
+  }
+
+  @media (min-width: 1024px) {
+      .media-container,
+      .text-container {
+          max-width: 600px; /* Increase max-width slightly on very large screens */
+      }
+       .scroll-block.only-media .media-container,
+       .scroll-block.only-text .text-container {
+           max-width: 800px;
+       }
+  }
+</style>

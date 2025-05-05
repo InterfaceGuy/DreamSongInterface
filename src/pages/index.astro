@@ -1,0 +1,64 @@
+---
+import Layout from '../layouts/Layout.astro';
+import ScrollBlock from '../components/ScrollBlock.astro';
+import { parseCanvas } from '../lib/canvasParser.js';
+// Import the JSON data directly (requires Astro v2.5+ or appropriate config)
+// Ensure your astro.config.mjs allows JSON imports if needed.
+// Or use fs.readFileSync if running in Node context (less ideal for Astro build)
+import canvasData from '../../DreamSong.canvas' assert { type: 'json' };
+
+// Parse the canvas data at build time
+const contentBlocks = parseCanvas(canvasData);
+
+// Handle potential parsing errors
+if (!Array.isArray(contentBlocks)) {
+	console.error("Failed to parse canvas data. Rendering empty page.");
+	// Optionally render an error message
+}
+
+---
+
+<Layout title="DreamSong - A Scroll-Telling Story">
+	<main>
+		{contentBlocks && contentBlocks.length > 0 ? (
+			contentBlocks.map((block, index) => (
+				<ScrollBlock block={block} index={index} />
+			))
+		) : (
+			<p class="error-message">Could not load story content. Please check the canvas data and parsing logic.</p>
+		)}
+	</main>
+</Layout>
+
+<style is:global>
+	main {
+		max-width: 1200px; /* Adjust as needed */
+		margin: 0 auto;
+		padding: 0 1rem;
+	}
+	h1, h2, h3, h4, h5, h6 {
+        /* Ensure headings also use the main font */
+        font-family: 'TeX Gyre Termes', serif;
+		/* Example heading color - adjust as needed */
+		color: rgb(var(--accent-light));
+        margin-bottom: 1em; /* Add some space below headings */
+        line-height: 1.3;
+	}
+    p {
+        line-height: 1.6; /* Improve readability */
+        margin-bottom: 1em; /* Space between paragraphs */
+    }
+    a {
+        color: rgb(var(--accent-light));
+        text-decoration: underline;
+    }
+    a:hover {
+        color: white;
+    }
+	.error-message {
+		color: #ff6666; /* Light red for errors */
+		text-align: center;
+		padding: 2rem;
+		font-size: 1.2em;
+	}
+</style>
