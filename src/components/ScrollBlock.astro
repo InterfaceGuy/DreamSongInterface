@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+
 ---
 // Define more flexible types for potentially missing media/text
 interface MediaData {
@@ -9,7 +11,7 @@ interface MediaData {
 interface BlockData {
   type: string; // e.g., 'block'
   media?: MediaData;
-  text?: string; // HTML string
+  text?: string; // Markdown string
 }
 
 interface Props {
@@ -18,6 +20,9 @@ interface Props {
 }
 
 const { block, index } = Astro.props;
+
+// Parse markdown text if it exists
+const parsedText = block.text ? await marked.parse(block.text) : undefined;
 
 // Determine layout order: media-left/text-right for even index, text-left/media-right for odd index
 const isMediaLeft = index % 2 === 0;
@@ -42,9 +47,9 @@ const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'}
       )}
     </div>
   )}
-  {block.text && (
+  {parsedText && (
     <div class="text-container">
-      <Fragment set:html={block.text} />
+      <Fragment set:html={parsedText} />
     </div>
   )}
 </section>
