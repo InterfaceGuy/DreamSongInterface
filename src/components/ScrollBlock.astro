@@ -22,7 +22,8 @@ interface Props {
 const { block, index } = Astro.props;
 
 // Parse markdown text if it exists
-const parsedText = block.text ? await marked.parse(block.text) : undefined;
+// Try synchronous parsing - marked.parse is often sync for basic usage
+const parsedText = block.text ? marked.parse(block.text) : undefined;
 
 // Determine layout order: media-left/text-right for even index, text-left/media-right for odd index
 const isMediaLeft = index % 2 === 0;
