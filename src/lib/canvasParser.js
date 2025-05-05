@@ -1,4 +1,5 @@
 import { topologicalSort } from './topologicalSort';
+import { marked } from 'marked';
 
 // Helper to determine media type from filename
 function getMediaType(filename) {
@@ -144,7 +145,7 @@ export function parseCanvas(canvasData) {
                  };
              }
          } else if (node.type === 'text') {
-             block.text = node.text;
+             block.text = node.text ? marked.parse(node.text) : ''; // Parse Markdown here
          }
          processedNodes.add(nodeId);
          contentBlocks.push(block);
@@ -160,7 +161,7 @@ export function parseCanvas(canvasData) {
               alt: createAltText(mediaNode.file)
           };
       }
-      block.text = textNode.text;
+      block.text = textNode.text ? marked.parse(textNode.text) : ''; // Parse Markdown here
 
       processedNodes.add(nodeId);
       processedNodes.add(pairedNodeId);
@@ -179,7 +180,7 @@ export function parseCanvas(canvasData) {
             console.warn(`Node ${nodeId} has unknown media type for file: ${node.file}. Skipping media.`);
         }
       } else if (node.type === 'text') {
-        block.text = node.text;
+        block.text = node.text ? marked.parse(node.text) : ''; // Parse Markdown here
       }
       processedNodes.add(nodeId);
     }

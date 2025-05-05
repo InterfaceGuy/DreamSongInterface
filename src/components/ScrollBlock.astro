@@ -1,5 +1,3 @@
-import { marked } from 'marked';
-
 ---
 // Define more flexible types for potentially missing media/text
 interface MediaData {
@@ -11,7 +9,7 @@ interface MediaData {
 interface BlockData {
   type: string; // e.g., 'block'
   media?: MediaData;
-  text?: string; // Markdown string
+  text?: string; // HTML string (already parsed)
 }
 
 interface Props {
@@ -21,9 +19,8 @@ interface Props {
 
 const { block, index } = Astro.props;
 
-// Parse markdown text if it exists
-// Try synchronous parsing - marked.parse is often sync for basic usage
-const parsedText = block.text ? marked.parse(block.text) : undefined;
+// Text is now pre-parsed HTML
+const parsedText = block.text; // No need to parse here
 
 // Determine layout order: media-left/text-right for even index, text-left/media-right for odd index
 const isMediaLeft = index % 2 === 0;
