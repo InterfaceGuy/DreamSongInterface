@@ -105,11 +105,20 @@ const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'}
     /* Adjust width for side-by-side layout */
     .media-container,
     .text-container {
-       /* Use flex-basis for better control */
-       flex-basis: calc(50% - 2rem); /* 50% minus half the gap */
-       width: auto; /* Override width: 100% */
-       max-width: 550px; /* Slightly smaller max-width when side-by-side */
+       width: auto; /* Override width: 100% from mobile */
+       /* Max-width is handled below */
     }
+
+    /* Define flex ratios for paired blocks (media 2/3, text 1/3) */
+    .scroll-block:not(.only-media):not(.only-text) .media-container {
+        flex: 2 1 0; /* flex-grow: 2, flex-shrink: 1, flex-basis: 0 */
+        max-width: 66%; /* Approximate max width */
+    }
+    .scroll-block:not(.only-media):not(.only-text) .text-container {
+        flex: 1 1 0; /* flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+        max-width: 33%; /* Approximate max width */
+    }
+
 
      /* Styles for blocks with only one element on large screens */
     .scroll-block.only-media .media-container,
@@ -131,10 +140,15 @@ const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'}
   }
 
   @media (min-width: 1024px) {
-      .media-container,
-      .text-container {
-          max-width: 600px; /* Increase max-width slightly on very large screens */
-      }
+      /* Adjust max-width for paired blocks on very large screens */
+       .scroll-block:not(.only-media):not(.only-text) .media-container {
+           max-width: 700px; /* Allow media to be a bit larger */
+       }
+       .scroll-block:not(.only-media):not(.only-text) .text-container {
+           max-width: 400px; /* Allow text to be a bit larger */
+       }
+
+       /* Adjust max-width for single-element blocks on very large screens */
        .scroll-block.only-media .media-container,
        .scroll-block.only-text .text-container {
            max-width: 800px;
