@@ -41,7 +41,7 @@ const blockClasses = `scroll-block ${isMediaLeft ? 'media-left' : 'media-right'}
       {block.media.type === 'image' ? (
         <img src={block.media.src} alt={block.media.alt} loading="lazy" />
       ) : (
-        <video src={block.media.src} controls loading="lazy" muted autoplay loop playsinline></video>
+        <video src={block.media.src} loading="lazy" muted autoplay loop playsinline></video>
       )}
     </div>
   )}
