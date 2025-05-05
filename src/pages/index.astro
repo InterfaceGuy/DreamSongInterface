@@ -1,14 +1,35 @@
 ---
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import Layout from '../layouts/Layout.astro';
 import ScrollBlock from '../components/ScrollBlock.astro';
 import { parseCanvas } from '../lib/canvasParser.js';
-// Import the JSON data directly (requires Astro v2.5+ or appropriate config)
-// Ensure your astro.config.mjs allows JSON imports if needed.
-// Or use fs.readFileSync if running in Node context (less ideal for Astro build)
-import canvasData from '../../DreamSong.canvas' assert { type: 'json' };
 
-// Parse the canvas data at build time
-const contentBlocks = parseCanvas(canvasData);
+// Construct the absolute path to the canvas file
+// import.meta.url gives the URL of the current module (index.astro)
+// fileURLToPath converts the file URL to a file system path
+// path.resolve navigates up two directories and then to DreamSong.canvas
+const currentFilePath = fileURLToPath(import.meta.url);
+const canvasFilePath = path.resolve(path.dirname(currentFilePath), '../../DreamSong.canvas');
+
+let contentBlocks = [];
+let canvasData;
+
+try {
+	// Read the file content
+	const canvasFileContent = readFileSync(canvasFilePath, 'utf-8');
+	// Parse the JSON data
+	canvasData = JSON.parse(canvasFileContent);
+	// Parse the canvas data using your library function
+	contentBlocks = parseCanvas(canvasData);
+} catch (error) {
+	console.error("Error reading or parsing DreamSong.canvas:", error);
+	// Handle potential errors (e.g., file not found, invalid JSON)
+}
+
+
+// Handle potential parsing errors from parseCanvas itself
 
 // Handle potential parsing errors
 if (!Array.isArray(contentBlocks)) {
