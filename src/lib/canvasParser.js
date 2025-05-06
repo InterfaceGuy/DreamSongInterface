@@ -28,17 +28,10 @@ function createAltText(filename) {
 
 // Helper to transform the media path
 function transformMediaPath(filePath) {
-  const firstSlashIndex = filePath.indexOf('/');
-  if (firstSlashIndex !== -1) {
-      // Found a directory separator, replace the part before it with 'media'
-      const restOfPath = filePath.substring(firstSlashIndex + 1);
-      return `/media/${restOfPath}`;
-  } else {
-      // No directory found in the path. Prefix with /media/.
-      // This might indicate an unexpected path structure in the canvas file.
-      console.warn(`Media path "${filePath}" does not contain a directory separator '/'. Placing it directly under /media/.`);
-      return `/media/${filePath}`;
-  }
+  // Extract the base filename, discarding any preceding path components
+  const filename = filePath.split('/').pop();
+  // Construct the path relative to the public directory, assuming media files are in public/media/
+  return `/media/${filename}`;
 }
 
 
