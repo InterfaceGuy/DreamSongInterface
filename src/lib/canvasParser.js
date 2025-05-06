@@ -30,8 +30,9 @@ function createAltText(filename) {
 function transformMediaPath(filePath) {
   // Extract the base filename, discarding any preceding path components
   const filename = filePath.split('/').pop();
-  // Construct the path relative to the public directory, assuming media files are in public/media/
-  return `/media/${filename}`;
+  // Construct the path relative to the current page, assuming media files are in public/media/
+  // This will be resolved by the browser relative to the page's URL (which includes the base path).
+  return `media/${filename}`;
 }
 
 
